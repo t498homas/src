@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package projectsudoku;
 
 import java.io.FileOutputStream;
@@ -10,7 +7,7 @@ import java.io.ObjectOutputStream;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * Class GameSaver bla bla bla
  * @author Thomas Jakobsson
  * @version
  */
