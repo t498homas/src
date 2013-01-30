@@ -5,7 +5,7 @@ package projectsudoku;
  * It also check if a given sudoku is valid and
  * can be solved.
  * The main part of the code is written by XXX
- * and is to be found at www.XXXXXXXXX
+ * and is to be found at www.XXXXXXXXXxx
  *
  * @author Thomas Jakobsson
  * @version 2012-01-25
