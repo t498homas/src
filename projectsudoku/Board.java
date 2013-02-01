@@ -6,7 +6,6 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.ChangeListener;
@@ -20,7 +19,7 @@ import javax.swing.event.ChangeListener;
  * @author Thomas Jakobsson
  * @version 2012-01-12
  */
-public class Board extends BackgroundPanel implements Serializable
+public class Board extends BackgroundPanel
 {
 
     private SudokuButton[][] mButtons;
