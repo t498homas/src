@@ -1,5 +1,6 @@
 package projectsudoku;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
@@ -11,8 +12,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -140,12 +145,19 @@ public class Control
     {
         if (!mGameInAction) // can only be done if no game is active
         {
-            mGUI.getBoard().lockShowingNumbers(); // set button showing number to locked
-            String newname = JOptionPane.showInputDialog("Vad vill du döpa spelet till?"); // get name of the game from user
-            if (!"".equals(newname) && newname != null) // dont do anything unless user names game or if press cancel 
-            {   // save the game
-                mSaver.saveGame("newgames/", newname, new Game(mGUI.getBoard().getButtons(), mGUI.getTimePanel().getHours(), mGUI.getTimePanel().getMinutes(), mGUI.getTimePanel().getSeconds()));
-                clearBoard(); // clear the board
+            extractValuesFromBoard();
+            if (mSolver.checkNewGame(mCurrentValues))
+            {
+                mGUI.getBoard().lockShowingNumbers(); // set button showing number to locked
+                String newname = JOptionPane.showInputDialog("Vad vill du döpa spelet till?"); // get name of the game from user
+                if (!"".equals(newname) && newname != null) // dont do anything unless user names game or if press cancel 
+                {   // save the game
+                    mSaver.saveGame("newgames/", newname, new Game(mGUI.getBoard().getButtons(), mGUI.getTimePanel().getHours(), mGUI.getTimePanel().getMinutes(), mGUI.getTimePanel().getSeconds()));
+                    clearBoard(); // clear the board
+                }
+            } else
+            {
+                JOptionPane.showMessageDialog(null, "Du har försökt spara ett olösligt sudoku!", "HOPPSAN!!!", JOptionPane.PLAIN_MESSAGE);
             }
         }
 
@@ -158,7 +170,6 @@ public class Control
         if (!mGameInAction)  // can only be done if no game is active
         {
             mGUI.getBoard().resetAllButtons();
-            extractValuesFromBoard();
         }
 
     }
@@ -214,27 +225,30 @@ public class Control
     // method to save a game in action, time stops when the ok to save is pressed, called by "Spara spel" button
     private void saveGame()
     {
-        String savedname = JOptionPane.showInputDialog("<html>Vad vill du döpa spelet till?<br>Tomt fält ger datum och tid som namn</html>"); // get the name from user
-        if (savedname != null) // if user dont press cancel
+        if (mGameInAction) // can only be done if there is a game to save
         {
-            if ("".equals(savedname)) // if no name is given , set name to date and time
+            String savedname = JOptionPane.showInputDialog("<html>Vad vill du döpa spelet till?<br>Tomt fält ger datum och tid som namn</html>"); // get the name from user
+            if (savedname != null) // if user dont press cancel
             {
-                // if no name is chosen set date and time as name
-                DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
-                Calendar cal = Calendar.getInstance();
-                savedname = dateFormat.format(cal.getTime());
-            }
-            //save the game in folder savedgames
-            mSaver.saveGame("savedgames/", savedname, new Game(mGUI.getBoard().getButtons(), mGUI.getTimePanel().getHours(), mGUI.getTimePanel().getMinutes(), mGUI.getTimePanel().getSeconds()));
-            // stop clock and reset game
-            mGUI.getTimePanel().stop();
-            mGameInAction = false;
-            clearBoard();
-            mGUI.getTimePanel().reset();
+                if ("".equals(savedname)) // if no name is given , set name to date and time
+                {
+                    // if no name is chosen set date and time as name
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
+                    Calendar cal = Calendar.getInstance();
+                    savedname = dateFormat.format(cal.getTime());
+                }
+                //save the game in folder savedgames
+                mSaver.saveGame("savedgames/", savedname, new Game(mGUI.getBoard().getButtons(), mGUI.getTimePanel().getHours(), mGUI.getTimePanel().getMinutes(), mGUI.getTimePanel().getSeconds()));
+                // stop clock and reset game
+                mGUI.getTimePanel().stop();
+                mGameInAction = false;
+                clearBoard();
+                mGUI.getTimePanel().reset();
 
-        } else  // if action is cancelled
-        {
-            // nothing to do
+            } else  // if action is cancelled
+            {
+                // nothing to do
+            }
         }
 
     }
@@ -404,17 +418,27 @@ public class Control
     {
         mReader.highscoreToArray(mScores, mNames);
     }
-    
+
     // shows the helptext for the user, called by the "Hjälp" button
     private void help()
     {
         try
-                        {
-                            JOptionPane.showMessageDialog(null, mReader.getText("documents/help.txt"), "Om SudokuSolver", JOptionPane.PLAIN_MESSAGE);
-                        } catch (FileNotFoundException | IllegalStateException | IllegalArgumentException ex)
-                        {
-                            JOptionPane.showMessageDialog(null, "Det gick inte att läsa filen", "Fel!", JOptionPane.PLAIN_MESSAGE);
-                        }
+        {
+            // create a JTextArea
+            JTextArea textArea = new JTextArea(30, 70);
+            textArea.setText(mReader.getText("documents/help.txt"));
+            Border border = BorderFactory.createLineBorder(Color.BLACK, 3, true);
+            textArea.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+            textArea.setEditable(false);
+
+            // wrap a scrollpane around it
+            JScrollPane scrollPane = new JScrollPane(textArea);
+
+            JOptionPane.showMessageDialog(null, scrollPane, "Om SudokuSolver", JOptionPane.PLAIN_MESSAGE);
+        } catch (FileNotFoundException | IllegalStateException | IllegalArgumentException ex)
+        {
+            JOptionPane.showMessageDialog(null, "Det gick inte att läsa filen", "Fel!", JOptionPane.PLAIN_MESSAGE);
+        }
     }
 
     // exit application and confirm that user really want to quit
