@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package projectsudoku;
 
 import java.awt.Dimension;
@@ -9,8 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -33,12 +28,18 @@ public class SudokuButton extends JButton implements Serializable
      * flips to zero when passing nine
      * @throws IOException
      */
-    public SudokuButton() throws IOException
+    public SudokuButton() 
     {
         mValue = 0; // zero equals no number in square
-        setIcon(new ImageIcon(ImageIO.read(this.getClass().getResource("/projectsudoku/images/blank.gif"))));
+        try
+        {
+            setIcon(new ImageIcon(ImageIO.read(this.getClass().getResource("/projectsudoku/images/blank.gif"))));
+        } catch (IOException ex)
+        {
+            // do nothing if the image not found button will be empty
+        }
         mLocked = false;
-        setRolloverEnabled(false);
+        setRolloverEnabled(false); 
         setPreferredSize(new Dimension(10, 10));
         updateActionListener();
     }
@@ -74,7 +75,7 @@ public class SudokuButton extends JButton implements Serializable
     }
     
     /**
-     * Sets wheter a button is locked or not
+     * Sets whether a button is locked or not
      * @param inState boolean 
      */
     public void setLocked(boolean inState)
@@ -97,7 +98,7 @@ public class SudokuButton extends JButton implements Serializable
                 setIcon(new ImageIcon(ImageIO.read(this.getClass().getResource("/projectsudoku/images/blank.gif"))));
             } catch (IOException ex)
             {
-                Logger.getLogger(SudokuButton.class.getName()).log(Level.SEVERE, null, ex);
+                // do nothing if the image not found button will be empty
             }
         } else // increase value by one
         {
@@ -108,7 +109,7 @@ public class SudokuButton extends JButton implements Serializable
                 setIcon(new ImageIcon(ImageIO.read(this.getClass().getResource(img)))); 
             } catch (IOException ex)
             {
-                //Logger.getLogger(SudokuButton.class.getName()).log(Level.SEVERE, null, ex);
+                // do nothing if the image not found button will be empty
             }
         }
     }
@@ -124,6 +125,10 @@ public class SudokuButton extends JButton implements Serializable
         setImage();
     }
 
+    /**
+     * Sets image on button
+     * Checks the current value and locked status and set corresponding image.
+     */
     public void setImage()
     {
        
@@ -132,19 +137,15 @@ public class SudokuButton extends JButton implements Serializable
             if (mValue == 0)
             {
                 img = "/projectsudoku/images/blank.gif";
-                System.out.println("en nolla");
             } else 
             {       
                 if(mLocked)
                 {
                     img = "/projectsudoku/images/" + mValue + "Lock.gif";
-                    System.out.println("en låst");
                 }
                 else
                 {
-                    img = "/projectsudoku/images/" + mValue + ".gif";
-                    System.out.println("en öppen");
-                    
+                    img = "/projectsudoku/images/" + mValue + ".gif";       
             }
             }  
                 try
@@ -153,16 +154,15 @@ public class SudokuButton extends JButton implements Serializable
                     setIcon(image);
                 } catch (IOException | IllegalArgumentException ex)
                 {
-                    
+                    // do nothing if the image not found button will be empty
                 }
-                
         repaint();
     }
     
     
 
     /**
-     * sets value
+     * sets value of button
      * @param inValue int value
      */
     public void setValue(int inValue)

@@ -28,11 +28,8 @@ public class DataReader
      * Returns a text as a string from a textfile
      * @param inFile String Path to the textfile
      * @return String content in File as a string
-     * @throws FileNotFoundException
-     * @throws IllegalStateException
-     * @throws IllegalArgumentException
      */
-    public String getText(String inFile) throws FileNotFoundException, IllegalStateException, IllegalArgumentException
+    public String getText(String inFile) 
     {
         Scanner inputStream = null;
         try
@@ -54,7 +51,6 @@ public class DataReader
         } catch (IllegalStateException ex)
         {
             JOptionPane.showMessageDialog(null, "det gick inte att läsa filen"); // show is something went wrong
-
         }
         inputStream.close(); // be sure to close the stream
         return info;
@@ -81,24 +77,21 @@ public class DataReader
         } catch (FileNotFoundException | IllegalArgumentException ex)
         {
             JOptionPane.showMessageDialog(null, "Något gick fel, försök igen"); // show is something went wrong
-            
         }
         
         try
         {
             while (inputScores.hasNext() == true) // continue until document is finished
             {
-                inScores.add(Integer.parseInt(inputScores.nextLine())); // add score
-
+                inScores.add(Integer.parseInt(inputScores.nextLine())); // add score to ArrayList
             }
             while (inputNames.hasNext() == true)
             {
-                inNames.add(inputNames.nextLine());  // add name
+                inNames.add(inputNames.nextLine());  // add name to ArrayList
             }
         } catch (IllegalStateException ex)
         {
             JOptionPane.showMessageDialog(null, "det gick inte att läsa filen"); // show is something went wrong
-
         }
         inputScores.close(); // be sure to close the stream
     }

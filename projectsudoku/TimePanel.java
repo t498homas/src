@@ -17,7 +17,6 @@ public class TimePanel extends JLabel
     private TimerDisplay mDisplay;
     private boolean mRunning;
     private TimerThread mTimeThread;
-    private boolean mStartedOnce;
 
     /**
      * Creates a TimePanel
@@ -27,9 +26,8 @@ public class TimePanel extends JLabel
         mDisplay = new TimerDisplay();
         mRunning = false;
         mTimeThread = new TimerThread();
-        mStartedOnce = false;
         setText(mDisplay.getTime());
-        setFont(new Font("Dialog", Font.BOLD, 20));
+        setFont(new Font("Dialog", Font.BOLD, 20)); // change the look
     }
    
     /**
@@ -50,6 +48,11 @@ public class TimePanel extends JLabel
     public void stop()
     {
         mRunning = false;
+    }
+    
+    public void newTimeThread()
+    {
+        mTimeThread = new TimerThread();
     }
     
     /**
@@ -110,8 +113,11 @@ public class TimePanel extends JLabel
         public void run()
         {
             while (mRunning) {
-                step();
                 pause();
+                if(mRunning) // if mRunning is set to false while pausing
+                {
+                step();
+                }
             }
         }
         
@@ -119,9 +125,10 @@ public class TimePanel extends JLabel
         private void pause()
         {
             try {
-                Thread.sleep(1000);   // pause for 300 milliseconds
+                Thread.sleep(1000);   // pause for 1000 milliseconds
             }
-            catch (InterruptedException exc) {
+            catch (InterruptedException ignore) {
+                // do nothing
             }
         }
     }

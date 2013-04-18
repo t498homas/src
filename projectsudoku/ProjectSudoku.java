@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package projectsudoku;
 
 import java.io.IOException;
@@ -18,7 +15,7 @@ public class ProjectSudoku
      */
     public static void main(String[] args) throws IOException
     {
-        Control game= new Control();
+        Control newGame= new Control();
         
         // TODO code application logic here
     }

@@ -4,6 +4,9 @@ package projectsudoku;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import javax.swing.JOptionPane;
 
 /**
@@ -29,6 +32,13 @@ public class GameSaver
      */
     public void saveGame(String inFolder, String inName, Game inGame)
     {
+        if ("".equals(inName)) // if no name is given , set name to date and time
+                {
+                    // if no name is chosen set date and time as name
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
+                    Calendar cal = Calendar.getInstance();
+                    inName = dateFormat.format(cal.getTime());
+                }
         String path = inFolder + inName + ".ser";
         try
         {
@@ -40,7 +50,6 @@ public class GameSaver
         } catch (IOException ex)
         {
             JOptionPane.showMessageDialog(null, "Det gick inte att skriva filen", "Fel!", JOptionPane.PLAIN_MESSAGE);
-            //Logger.getLogger(GameSaver.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

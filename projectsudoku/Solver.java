@@ -8,7 +8,7 @@ package projectsudoku;
  * and is to be found at www.XXXXXXXXXxx
  *
  * @author Thomas Jakobsson
- * @version 2012-01-25
+ * @version 2013-01-25
  */
 public class Solver
 {
@@ -30,12 +30,18 @@ public class Solver
         mFound = false;
     }
 
+    /**
+     * Starts the process of solving the sukodku
+     * @param inValues int[][] the sudoku to be solved
+     * @throws Exception
+     */
     public void run(int[][] inValues) throws Exception
     {
 
         mValues = inValues;
 
         // find first empty cell---------------------------------------
+        // if this cell is visited more than nine times, the sudoku is unsolveble
         for (int r = 0; r < 9; r++)
         {
             for (int c = 0; c < 9; c++)
@@ -44,7 +50,6 @@ public class Solver
                 {
                     mFirstEmptyRow = r;
                     mFirstEmptyCol = c;
-                    System.out.println("rad " + r + " col " + c);
                     mFound = true;
                 }
             }
@@ -56,29 +61,28 @@ public class Solver
             solve(0, 0);
         } catch (Exception e)
         {
+            // different exceptions is thrown depending on sudoku is
+            // solved, unsolvable or numbers are in conflict
             switch (e.getMessage())
             {
                 case "Solution not found":
                     mTimesVisited = 0;
-                    System.out.println("ingen lösming hittad");
-                    throw new Exception("Solution not found");
+                    throw new Exception("Det finns ingen lösning på detta sudoku!");
                     
                 case "Solution found":
-                    System.out.println("lösning hittad");
+                    mTimesVisited = 0;
                     
                     break;
                 case "number in conflict":
                     mTimesVisited = 0;
-                    System.out.println("konflikt");
-                    throw new Exception("Numbers in conflict");      
+                    throw new Exception("Siffrorna är i konflikt med varandra!");      
             }
         }
     }
 
-    /**
-     * Recursive function to find a valid number for one single cell
-     */
-    public void solve(int row, int col) throws Exception
+    
+     //Recursive function to find a valid number for one single cell
+    private void solve(int row, int col) throws Exception
     {
         try
         {
@@ -123,10 +127,9 @@ public class Solver
         }
     }
 
-    /**
-     * Calls solve for the next cell
-     */
-    public void next(int row, int col) throws Exception
+    
+     //Calls solve for the next cell
+    private void next(int row, int col) throws Exception
     {
         if (col < 8)
         {
@@ -137,10 +140,9 @@ public class Solver
         }
     }
 
-    /**
-     * Checks if num is an acceptable value for the given row
-     */
-    protected boolean checkRow(int row, int num)
+    
+    //Checks if num is an acceptable value for the given row
+    private boolean checkRow(int row, int num)
     {
         boolean isGood = true;
         for (int col = 0; col < 9; col++)
@@ -154,10 +156,9 @@ public class Solver
         return isGood;
     }
 
-    /**
-     * Checks if num is an acceptable value for the given row
-     */
-    protected boolean checkNumRow(int row, int num)
+    
+     //Checks if num is an acceptable value for the given row
+    private boolean checkNumRow(int row, int num)
     {
         boolean isGood = true;
         int foundTimes = 0;
@@ -176,10 +177,8 @@ public class Solver
         return isGood;
     }
 
-    /**
-     * Checks if num is an acceptable value for the given column
-     */
-    protected boolean checkCol(int col, int num)
+     //Checks if num is an acceptable value for the given column
+    private boolean checkCol(int col, int num)
     {
         boolean isGood = true;
         for (int row = 0; row < 9; row++)
@@ -192,10 +191,8 @@ public class Solver
         return isGood;
     }
 
-    /**
-     * Checks if num accurs more than once for the given column
-     */
-    protected boolean checkNumCol(int col, int num)
+     //Checks if num accurs more than once for the given column
+    private boolean checkNumCol(int col, int num)
     {
         boolean isGood = true;
         int foundTimes = 0;
@@ -213,10 +210,8 @@ public class Solver
         return isGood;
     }
 
-    /**
-     * Checks if num is an acceptable value for the box around row and col
-     */
-    protected boolean checkBox(int row, int col, int num)
+     //Checks if num is an acceptable value for the box around row and col
+    private boolean checkBox(int row, int col, int num)
     {
         boolean isGood = true;
         row = (row / 3) * 3;
@@ -236,10 +231,9 @@ public class Solver
         return isGood;
     }
 
-    /**
-     * Checks if num is an acceptable value for the box around row and col
-     */
-    protected boolean checkNumBox(int row, int col, int num)
+
+     //Checks if num is an acceptable value for the box around row and col
+    private boolean checkNumBox(int row, int col, int num)
     {
         int foundTimes = 0;
         boolean isGood = true;
@@ -264,12 +258,20 @@ public class Solver
         return isGood;
     }
 
+    /**
+     * Returns the correct solution for the specified square
+     * @param inRow int number of row
+     * @param inCol int number of column
+     * @return int value of square
+     */
     public int getSolution(int inRow, int inCol)
     {
         return mValues[inRow][inCol];
     }
 
-    public boolean checkNumbers() throws Exception
+     //Checks that numbers only shows once in every
+     //row, column and box
+    private boolean checkNumbers() throws Exception
     {
         boolean isGood = true;
         for (int r = 0; r < 9; r++)
@@ -288,6 +290,28 @@ public class Solver
                     }
                 }
             }
+        }
+        return isGood;
+    }
+    
+    /**
+     * Checks if a given sudokugame is valid.
+     * @param inValues int[][]] suddkunumbers to be checked
+     * @return boolean true if game is valid, false if not
+     */
+    public boolean checkNewGame(int[][] inValues)
+    {
+        boolean isGood = false;
+        mValues = inValues;
+        try
+        {
+            if(checkNumbers())
+            {
+                isGood = true;
+            }
+        } catch (Exception ex)
+        {
+          // do nothing , game is not valid
         }
         return isGood;
     }

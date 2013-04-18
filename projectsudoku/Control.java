@@ -3,15 +3,9 @@ package projectsudoku;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -30,33 +24,33 @@ import javax.swing.event.ChangeListener;
 public class Control
 {
 
-    private GUI mGUI;
-    private GameLoader mLoader;
-    private GameSaver mSaver;
-    private DataReader mReader;
-    private DataWriter mWriter;
-    private Solver mSolver;
-    private ActionListener mAL;
-    private ChangeListener mCL;
-    private int[][] mCurrentValues;
-    private int[][] mSolutionValues;
+    private GUI mGUI; // The GUI the user see
+    private GameLoader mLoader; // gameLOader for saved games
+    private GameSaver mSaver; // for saving active games
+    private DataReader mReader; // For readind text-files
+    private DataWriter mWriter; // for writing text-files
+    private Solver mSolver; // contains the algorithm for solving the sudoku
+    private ActionListener mAL; // actionlistener for buttons
+    private ChangeListener mCL; // actionlistener for SudokuButtons
+    private int[][] mCurrentValues; // the values on the board atm
+    private int[][] mSolutionValues; // the valuues of the solution provided by solver
     private boolean mGameInAction; // true when game is running
     private boolean mSolved; // true if sudoku is solved
-    private ArrayList<Integer> mScores;
-    private ArrayList<String> mNames;
+    private ArrayList<Integer> mScores; // scores for highscorelist
+    private ArrayList<String> mNames; // names for highscorelist
 
     /**
      * Creates a default control
      *
-     * @throws IOException
      */
-    public Control() throws IOException
+    public Control() 
     {
         mAL = new ActionListener() // to be added to all JButtons on the GUI
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                // check which JButton that was pressed and take action
                 JButton pressed = (JButton) e.getSource();
                 switch (pressed.getName())
                 {
@@ -105,8 +99,13 @@ public class Control
                 checkIfCorrect();
             }
         };
-
-        mGUI = new GUI(mAL, mCL);
+        try
+        {
+            mGUI = new GUI(mAL, mCL);
+        } catch (IOException | IllegalArgumentException ex)
+        {
+            JOptionPane.showMessageDialog(null, "Bilderna till spelet kan inte hittas!");
+        }
         mLoader = new GameLoader();
         mSaver = new GameSaver();
         mLoader = new GameLoader();
@@ -149,11 +148,15 @@ public class Control
             if (mSolver.checkNewGame(mCurrentValues))
             {
                 mGUI.getBoard().lockShowingNumbers(); // set button showing number to locked
-                String newname = JOptionPane.showInputDialog("Vad vill du döpa spelet till?"); // get name of the game from user
-                if (!"".equals(newname) && newname != null) // dont do anything unless user names game or if press cancel 
+                String newName = JOptionPane.showInputDialog("Vad vill du döpa spelet till?"); // get name of the game from user
+                if (!"".equals(newName) && newName != null) // dont do anything unless user names game or if press cancel 
                 {   // save the game
-                    mSaver.saveGame("newgames/", newname, new Game(mGUI.getBoard().getButtons(), mGUI.getTimePanel().getHours(), mGUI.getTimePanel().getMinutes(), mGUI.getTimePanel().getSeconds()));
+                    mSaver.saveGame("newgames/", newName, new Game(mGUI.getBoard().getButtons(), mGUI.getTimePanel().getHours(), mGUI.getTimePanel().getMinutes(), mGUI.getTimePanel().getSeconds()));
                     clearBoard(); // clear the board
+                }
+                else if(newName.equals(""))
+                {
+                    JOptionPane.showMessageDialog(null, "Du måste namnge det nya spelet!", "Namnge spelet!", JOptionPane.PLAIN_MESSAGE);
                 }
             } else
             {
@@ -186,7 +189,8 @@ public class Control
                 mSolver.run(mCurrentValues);
             } catch (Exception ex)
             {
-                JOptionPane.showMessageDialog(null, "Du har försökt lösa ett olösligt sudoku!", "HOPPSAN!!!", JOptionPane.PLAIN_MESSAGE);
+                String info = ex.getMessage();
+                JOptionPane.showMessageDialog(null, info, "HOPPSAN!!!", JOptionPane.PLAIN_MESSAGE);
             }
             updateBoardButton();
         }
@@ -211,7 +215,7 @@ public class Control
                     mSolver.run(mCurrentValues);
                 } catch (Exception ex)
                 {
-                    Logger.getLogger(Control.class.getName()).log(Level.SEVERE, null, ex);
+                    // No need to do anything, game is already checked
                 }
                 getSolution();
                 extractValuesFromBoard(); // now get all values to get current board 
@@ -230,13 +234,6 @@ public class Control
             String savedname = JOptionPane.showInputDialog("<html>Vad vill du döpa spelet till?<br>Tomt fält ger datum och tid som namn</html>"); // get the name from user
             if (savedname != null) // if user dont press cancel
             {
-                if ("".equals(savedname)) // if no name is given , set name to date and time
-                {
-                    // if no name is chosen set date and time as name
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
-                    Calendar cal = Calendar.getInstance();
-                    savedname = dateFormat.format(cal.getTime());
-                }
                 //save the game in folder savedgames
                 mSaver.saveGame("savedgames/", savedname, new Game(mGUI.getBoard().getButtons(), mGUI.getTimePanel().getHours(), mGUI.getTimePanel().getMinutes(), mGUI.getTimePanel().getSeconds()));
                 // stop clock and reset game
@@ -244,16 +241,19 @@ public class Control
                 mGameInAction = false;
                 clearBoard();
                 mGUI.getTimePanel().reset();
-
-            } else  // if action is cancelled
-            {
-                // nothing to do
             }
         }
+    }
+
+    // create the top ten list, called by the "Highsore" button
+    private void setHighscoreList()
+    {
+        mWriter.saveToHighscore(mNames, mScores);
+        JOptionPane.showMessageDialog(null, mReader.getText("documents/Highscore.txt"), "Highscorelista", JOptionPane.PLAIN_MESSAGE);
 
     }
-    // resets all unlocked buttos during a game, called by "Börja om" button
 
+    // resets all unlocked buttos during a game, called by "Börja om" button
     private void restartGame()
     {
         mGUI.getBoard().resetUnlockedButtons();
@@ -266,10 +266,10 @@ public class Control
         {
             mGameInAction = false;
             mSolved = false;
+            
+            clearBoard();
             mGUI.getTimePanel().stop();
             mGUI.getTimePanel().reset();
-            clearBoard();
-            mGUI.getBoard().repaint();
         }
     }
 
@@ -285,7 +285,7 @@ public class Control
             mSolver.run(mCurrentValues);
         } catch (Exception ex)
         {
-            Logger.getLogger(Control.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(Control.class.getName()).log(Level.SEVERE, null, ex);
         }
         getSolution(); // update mSolutionValues
         extractLockedValues(); // update mCurrentValues
@@ -388,29 +388,9 @@ public class Control
             mScores.add(i, score); // add the user to position
             mNames.add(i, name);
             // make new list
-            try
-            {
-                mWriter.clearLists(); // clear lists just in case
-                setHighscoreList();
-            } catch (FileNotFoundException ex)
-            {
-                JOptionPane.showMessageDialog(null, "Det gick inte att skriva filen", "Fel!", JOptionPane.PLAIN_MESSAGE);
-            }
+            mWriter.clearLists(); // clear lists just in case
+            setHighscoreList();
         }
-    }
-
-    // create the top ten list, called by the "Highsore" button
-    private void setHighscoreList()
-    {
-        mWriter.saveToHighscore(mNames, mScores);
-        try
-        {
-            JOptionPane.showMessageDialog(null, mReader.getText("documents/Highscore.txt"), "Highscorelista", JOptionPane.PLAIN_MESSAGE);
-        } catch (FileNotFoundException | IllegalStateException | IllegalArgumentException ex)
-        {
-            JOptionPane.showMessageDialog(null, "Det gick inte att läsa filen", "Fel!", JOptionPane.PLAIN_MESSAGE);
-        }
-
     }
 
     // creates the highscorelist
@@ -422,23 +402,15 @@ public class Control
     // shows the helptext for the user, called by the "Hjälp" button
     private void help()
     {
-        try
-        {
-            // create a JTextArea
-            JTextArea textArea = new JTextArea(30, 70);
-            textArea.setText(mReader.getText("documents/help.txt"));
-            Border border = BorderFactory.createLineBorder(Color.BLACK, 3, true);
-            textArea.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-            textArea.setEditable(false);
-
-            // wrap a scrollpane around it
-            JScrollPane scrollPane = new JScrollPane(textArea);
-
-            JOptionPane.showMessageDialog(null, scrollPane, "Om SudokuSolver", JOptionPane.PLAIN_MESSAGE);
-        } catch (FileNotFoundException | IllegalStateException | IllegalArgumentException ex)
-        {
-            JOptionPane.showMessageDialog(null, "Det gick inte att läsa filen", "Fel!", JOptionPane.PLAIN_MESSAGE);
-        }
+        // create a JTextArea
+        JTextArea textArea = new JTextArea(30, 70);
+        textArea.setText(mReader.getText("documents/help.txt"));
+        Border border = BorderFactory.createLineBorder(Color.BLACK, 3, true);
+        textArea.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        textArea.setEditable(false);
+        // wrap a scrollpane around it
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        JOptionPane.showMessageDialog(null, scrollPane, "Om SudokuSolver", JOptionPane.PLAIN_MESSAGE);
     }
 
     // exit application and confirm that user really want to quit

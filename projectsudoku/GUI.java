@@ -40,9 +40,10 @@ public class GUI extends JFrame
      */
     public GUI(ActionListener inAL, ChangeListener inCL) throws IOException
     {
+        setTitle("SudokuSolver");
 
         //----Set up board ------------------------------
-        mBoard = new Board(GUI.getImage("center.gif"), mAL, inCL);
+        mBoard = new Board(GUI.getImage("center.gif"), inCL);
         mTimePanel = new TimePanel();
         mAL = inAL;
         //---------North-----------------------------------
@@ -108,6 +109,7 @@ public class GUI extends JFrame
 
     /**
      * Returns the Board in GUI
+     *
      * @return Board Board in GUI
      */
     public Board getBoard()
@@ -117,6 +119,7 @@ public class GUI extends JFrame
 
     /**
      * Returns the TimePanel in GUI
+     *
      * @return TimePanel TimePanel in GUI
      */
     public TimePanel getTimePanel()
@@ -126,8 +129,9 @@ public class GUI extends JFrame
 
     /**
      * Static method for getting Images
+     *
      * @param inName String name of image
-     * @return Image 
+     * @return Image The chosen image
      * @throws IOException
      */
     public static Image getImage(String inName) throws IOException

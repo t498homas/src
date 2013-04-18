@@ -1,7 +1,5 @@
 package projectsudoku;
 
-import java.io.Serializable;
-
 
 /**
  * The ClockDisplay class implements a digital clock display for a
@@ -13,10 +11,13 @@ import java.io.Serializable;
  * and reacts by incrementing the display. This is done in the usual clock
  * fashion: the hour increments when the minutes roll over to zero.
  * 
- * @author Michael Kölling and David J. Barnes
- * @version 2011.07.31
+ * Added by Thomas Jakobsson
+ * NumberDisplay for seconds
+ * 
+ * @author Michael Kölling and David J. Barnes addition by Thomas Jakobsson
+ * @version 2013-01-15
  */
-public final class TimerDisplay implements Serializable
+public final class TimerDisplay
 {
     private NumberDisplay mHours;
     private NumberDisplay mMinutes;

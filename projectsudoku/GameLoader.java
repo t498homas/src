@@ -45,14 +45,14 @@ public class GameLoader
             os = new ObjectInputStream(new FileInputStream(getFile()));
         } catch (IOException | NullPointerException ex)
         {
-            //Logger.getLogger(GameLoader.class.getName()).log(Level.SEVERE, null, ex);
+            // do nothing, user cancelled loading game
         }
         try
         {
             game = os.readObject();
         } catch (IOException | ClassNotFoundException | NullPointerException ex)
         {
-           // Logger.getLogger(GameLoader.class.getName()).log(Level.SEVERE, null, ex);
+           // do nothing, user cancelled loading game
         }
         mGame = (Game) game;
         return mGame;

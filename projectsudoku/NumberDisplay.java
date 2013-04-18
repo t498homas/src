@@ -1,7 +1,5 @@
 package projectsudoku;
 
-import java.io.Serializable;
-
 
 /**
  * The NumberDisplay class represents a digital number display that can hold
@@ -14,7 +12,7 @@ import java.io.Serializable;
  * @author Michael Kölling and David J. Barnes
  * @version 2011.07.31
  */
-public class NumberDisplay implements Serializable
+public class NumberDisplay
 {
     private int limit;
     private int value;
