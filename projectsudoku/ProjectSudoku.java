@@ -16,7 +16,5 @@ public class ProjectSudoku
     public static void main(String[] args) throws IOException
     {
         Control newGame= new Control();
-        
-        // TODO code application logic here
     }
 }
