@@ -45,52 +45,7 @@ public class Control
      */
     public Control() 
     {
-        mAL = new ActionListener() // to be added to all JButtons on the GUI
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                // check which JButton that was pressed and take action
-                JButton pressed = (JButton) e.getSource();
-                switch (pressed.getName())
-                {
-                    case "newGame":
-                        runNewGame();
-                        break;
-                    case "addGame":
-                        saveNewGame();
-                        break;
-                    case "clear":
-                        clearBoard();
-                        break;
-                    case "solve":
-                        solveGame();
-                        break;
-                    case "load":
-                        runSavedGame();
-                        break;
-                    case "save":
-                        saveGame();
-                        break;
-                    case "high":
-                        setHighscoreList();
-                        break;
-                    case "restart":
-                        restartGame();
-                        break;
-                    case "abort":
-                        abortGame();
-                        break;
-                    case "help":
-                        help();
-                        break;
-                    case "quit":
-                        close();
-                        break;
-                }
-            }
-        };
-
+        mAL = new Action(); // to be added to all JButtons on the GUI
         mCL = new ChangeListener() // to be added to all SudukoButtons
         {
             @Override
@@ -422,4 +377,52 @@ public class Control
             System.exit(0);
         }
     }
+    
+    private class Action implements ActionListener
+    {
+
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            // check which JButton that was pressed and take action
+                JButton pressed = (JButton) e.getSource();
+                switch (pressed.getName())
+                {
+                    case "newGame":
+                        runNewGame();
+                        break;
+                    case "addGame":
+                        saveNewGame();
+                        break;
+                    case "clear":
+                        clearBoard();
+                        break;
+                    case "solve":
+                        solveGame();
+                        break;
+                    case "load":
+                        runSavedGame();
+                        break;
+                    case "save":
+                        saveGame();
+                        break;
+                    case "high":
+                        setHighscoreList();
+                        break;
+                    case "restart":
+                        restartGame();
+                        break;
+                    case "abort":
+                        abortGame();
+                        break;
+                    case "help":
+                        help();
+                        break;
+                    case "quit":
+                        close();
+                        break;
+        }
+        
+    }
+}
 }
